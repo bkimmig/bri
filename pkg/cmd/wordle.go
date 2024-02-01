@@ -31,7 +31,7 @@ func wordleCmd() *cobra.Command {
 			fmt.Print("For example, if the wordle word is 'store' and you guessed 'stray', the input would be 'stray 22100'.\n")
 
 			criteria := wordle.NewCriteria()
-			entropy, err := wordle.GetDictionaryEntropy()
+			entropy, err := wordle.GetDictionaryEntropy(wordle.EntropyV2)
 			if err != nil {
 				fmt.Printf("error getting entropy: %v\n", err)
 			}
