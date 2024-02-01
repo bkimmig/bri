@@ -63,6 +63,7 @@ func wordleCmd() *cobra.Command {
 				if len(split) != 2 {
 					fmt.Printf("invalid input: %s\n", line)
 					fmt.Printf("input should be in the format '{word} {info} e.g. stray 22100'\n")
+					return
 				}
 				word := split[0]
 				info := split[1]

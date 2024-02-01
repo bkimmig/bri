@@ -1,7 +1,6 @@
 package wordle
 
 import (
-	"fmt"
 	"sort"
 	"testing"
 
@@ -21,17 +20,16 @@ func TestSearch(t *testing.T) {
 			"giddy": 1.,
 			"buzzy": 1.,
 			"missy": 1.,
+			"fussy": 1.,
 		}
 
 		// actual word is ivory
 		c.Update("stray", "10002")
 		e := Search(entropy, c)
 
-		fmt.Println(c)
-
 		got := maps.Keys(e)
 		sort.Strings(got)
-		want := []string{"missy", "giddy", "huffy", "buzzy"}
+		want := []string{"missy", "fussy"}
 		sort.Strings(want)
 
 		if !cmp.Equal(got, want) {

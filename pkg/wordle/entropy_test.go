@@ -1,7 +1,6 @@
 package wordle
 
 import (
-	"fmt"
 	"testing"
 )
 
@@ -15,9 +14,5 @@ func TestGetDictionaryEntropy(t *testing.T) {
 		if len(entropy) == 0 {
 			t.Fatal("no entropy found")
 		}
-
-		fmt.Println("here", entropy["ebony"])
-		t.Fatal("bork")
-
 	})
 }

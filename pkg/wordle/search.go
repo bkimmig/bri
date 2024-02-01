@@ -15,7 +15,7 @@ type criteria struct {
 }
 
 func (c criteria) isValid(word string) bool {
-	containsLetter := false
+	containsLetter := make(map[string]struct{})
 
 	for i, b := range word {
 		letter := string(b)
@@ -33,23 +33,17 @@ func (c criteria) isValid(word string) bool {
 			}
 		}
 
-		// check if the letter is just not allowed in that position,
-		// if it is not, then we can remove the word
-		if len(c.incorrect) == 0 {
-			containsLetter = true
-			continue
-		}
-
 		pos, ok := c.incorrect[letter]
 		if ok {
 			_, ok := pos[i]
 			if ok {
 				return false
 			}
-			containsLetter = true
+			containsLetter[letter] = struct{}{}
 		}
 	}
-	return containsLetter
+
+	return len(containsLetter) == len(c.incorrect)
 }
 
 func (c criteria) Update(word string, info string) error {
