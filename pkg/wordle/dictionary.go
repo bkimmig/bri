@@ -1,52 +1,30 @@
 package wordle
 
 import (
-	"bufio"
-	"fmt"
-	"os"
-	"runtime"
+	_ "embed"
 	"strings"
 )
 
+// the embed package allows you to embed files into your Go code
+// in this case we load in the words as a string and then parse them
+// to get them in the right format.
 var (
-	macOSDict   = "/usr/share/dict/words"
 	letterCount = 5
 
-	MacOSType     = "darwin" // macos
-	WindowsOSType = "windows"
+	//go:embed data/words.txt
+	dictionary string
 )
 
 func loadWords() ([]string, error) {
-	osType := runtime.GOOS
-
-	switch osType {
-	case MacOSType:
-		return loadDictionary(macOSDict)
-	default:
-		return nil, fmt.Errorf("unsupported os type: %s", osType)
-	}
-}
-
-func loadDictionary(fileName string) ([]string, error) {
-	file, err := os.Open(fileName)
-	if err != nil {
-		return nil, err
-	}
-	defer file.Close()
-
-	scanner := bufio.NewScanner(file)
-	// optionally, resize scanner's capacity for lines over 64K, see next example
-	var lines []string
-	for scanner.Scan() {
-		line := scanner.Text()
-		if len(line) == letterCount {
-			lines = append(lines, strings.ToLower(line))
+	allWords := strings.Split(dictionary, "\n")
+	words := make([]string, 0, len(allWords))
+	for _, word := range allWords {
+		word = strings.TrimSpace(word)
+		word = strings.ToLower(word)
+		if len(word) != letterCount {
+			continue
 		}
+		words = append(words, word)
 	}
-
-	if err := scanner.Err(); err != nil {
-		return nil, err
-	}
-
-	return lines, nil
+	return words, nil
 }
