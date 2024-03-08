@@ -12,7 +12,7 @@ import (
 	"golang.org/x/exp/maps"
 )
 
-var wordleLong = `A simple CLI for helping solve a wordle. It will prompt you for
+var wordleLong = `A command for helping solve a wordle. It will prompt you for
 the word and the exact hits (2), hits (1), and misses (0) for each
 letter.
 
@@ -24,7 +24,7 @@ likely words.`
 func wordleCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "wordle",
-		Short: "A simple CLI for helping solve a wordle",
+		Short: "A command for helping solve a wordle",
 		Long:  wordleLong,
 		Run: func(cmd *cobra.Command, args []string) {
 			fmt.Print("Input your first word and the exact hits (2), hits (1), and misses (0) for each letter.\n")
