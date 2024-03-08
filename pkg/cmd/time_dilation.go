@@ -34,7 +34,7 @@ func timeDialtionCmd() *cobra.Command {
 			gamma := 1 / math.Sqrt(1-math.Pow(c, 2))
 			shipYears := earthYears / gamma
 
-			fmt.Printf("\nYou'd need to spend %.1f years on ship moving at %.5fc to pass %.1f years on earth", shipYears, c, earthYears)
+			fmt.Printf("\nYou'd need to spend %.1f years on ship moving at %.5fc to pass %.1f years on earth.\n", shipYears, c, earthYears)
 
 		},
 	}
