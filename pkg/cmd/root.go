@@ -18,6 +18,7 @@ var rootCmd = &cobra.Command{
 // register any new commands or command groups here
 var commandRegistry = []*cobra.Command{
 	wordleCmd(),
+	timeDialtionCmd(),
 }
 
 // ----------------------------------------------------
