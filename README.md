@@ -41,9 +41,17 @@ And you'll have a small list to pick from.
 ## timedilation
 
 ```bash
-bri timedilation -e 50 -c 0.8
+bri timedilation -y 50 -c 0.8
 ```
 
 The answer to this should be ~30.
 
 "You'd need to spend 30.0 years on ship moving at 0.80000c to pass 50.0 years on earth"
+
+Or we can look from the ship's reference frame
+
+```bash
+bri timedilation -y 30 -c 0.8 -s
+```
+
+"You'd need to spend 30.0 years on ship moving at 0.80000c to pass 50.0 years on earth."
