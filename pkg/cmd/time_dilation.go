@@ -25,22 +25,36 @@ func timeDialtionCmd() *cobra.Command {
 				return
 			}
 
-			earthYears, err := cmd.Flags().GetFloat64("earth-years")
+			years, err := cmd.Flags().GetFloat64("years")
 			if err != nil {
-				fmt.Printf("error getting earth years: %v\n", err)
+				fmt.Printf("error getting years: %v\n", err)
+				return
+			}
+
+			shipReferenceFrame, err := cmd.Flags().GetBool("ship")
+			if err != nil {
+				fmt.Printf("error getting reference frame: %v\n", err)
 				return
 			}
 
 			gamma := 1 / math.Sqrt(1-math.Pow(c, 2))
-			shipYears := earthYears / gamma
+			var dilatedYears float64
+			output := "\nYou'd need to spend %.1f years on ship moving at %.5fc to pass %.1f years on earth.\n"
+			if shipReferenceFrame {
+				dilatedYears := years * gamma
+				fmt.Printf(output, years, c, dilatedYears)
+				return
+			}
 
-			fmt.Printf("\nYou'd need to spend %.1f years on ship moving at %.5fc to pass %.1f years on earth.\n", shipYears, c, earthYears)
+			dilatedYears = years / gamma
+			fmt.Printf(output, dilatedYears, c, years)
 
 		},
 	}
 
 	cmd.Flags().Float64P("percent-c", "c", 0.997, "Fraction of the speed of light")
-	cmd.Flags().Float64P("earth-years", "e", 10.1, "Number of earth year's you'd like to pass")
+	cmd.Flags().Float64P("years", "y", 10.0, "Number of years you'd like to pass")
+	cmd.Flags().BoolP("ship", "s", false, "Use reference frame of the ship for years")
 
 	return cmd
 }
