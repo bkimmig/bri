@@ -9,60 +9,57 @@ const (
 )
 
 type criteria struct {
-	excludes  map[string]struct{}
-	incorrect map[string]map[int]struct{}
-	exact     map[int]string
+	info     map[string]bool
+	contains map[string]struct{}
+	exact    map[string]struct{}
 }
 
 func (c criteria) isValid(word string) bool {
-	containsLetter := make(map[string]struct{})
-
+	contains := make(map[string]struct{}, len(word))
+	containsExact := make(map[string]struct{}, len(word))
 	for i, b := range word {
 		letter := string(b)
+		key := c.key(letter, i)
 
-		// contains an excluded letter? word can be removed immediately
-		if _, ok := c.excludes[letter]; ok {
+		// if something is false, throw it out immediately
+		info, ok := c.info[key]
+		if ok && !info {
 			return false
 		}
 
-		// do I know that the letter in this word belngs in
-		l, ok := c.exact[i]
+		// check if the letter is contained in the word
+		_, ok = c.contains[letter]
 		if ok {
-			if l != letter {
-				return false
-			}
+			contains[letter] = struct{}{}
 		}
 
-		pos, ok := c.incorrect[letter]
+		// check if the letter is in the correct position
+		_, ok = c.exact[key]
 		if ok {
-			_, ok := pos[i]
-			if ok {
-				return false
-			}
-			containsLetter[letter] = struct{}{}
+			containsExact[key] = struct{}{}
 		}
 	}
 
-	return len(containsLetter) == len(c.incorrect)
+	// number of uniuqe letters contained in the word must match the criteria
+	return len(contains) == len(c.contains) && len(containsExact) == len(c.exact)
 }
 
-func (c criteria) Update(word string, info string) error {
+func (c criteria) Update(word, info string) error {
 	for i, b := range word {
 		letter := string(b)
 		letterInfo := string(info[i])
+		key := c.key(letter, i)
 
 		switch letterInfo {
 		case miss:
-			c.excludes[letter] = struct{}{}
+			c.info[key] = false
 		case hit:
-			if _, ok := c.incorrect[letter]; !ok {
-				c.incorrect[letter] = make(map[int]struct{})
-			}
-			c.incorrect[letter][i] = struct{}{}
+			c.info[key] = false
+			c.contains[letter] = struct{}{}
 		case exactHit:
-			if _, ok := c.exact[i]; !ok {
-				c.exact[i] = letter
-			}
+			c.info[key] = true
+			c.contains[letter] = struct{}{}
+			c.exact[key] = struct{}{}
 		default:
 			return fmt.Errorf("invalid info: %s", info)
 		}
@@ -71,18 +68,22 @@ func (c criteria) Update(word string, info string) error {
 	return nil
 }
 
+func (c criteria) key(letter string, position int) string {
+	return fmt.Sprintf("%s-%d", letter, position)
+}
+
 func NewCriteria() criteria {
 	return criteria{
-		excludes:  make(map[string]struct{}),
-		incorrect: make(map[string]map[int]struct{}),
-		exact:     make(map[int]string),
+		info:     make(map[string]bool),
+		contains: make(map[string]struct{}),
+		exact:    make(map[string]struct{}),
 	}
 }
 
 // Search takes the entropy and criteria and returns the subset of the entropy that matches the criteria
 // entropy data object is structure like is word: entropy
 func Search(entropy map[string]float64, c criteria) map[string]float64 {
-	subsetEntropy := make(map[string]float64)
+	subsetEntropy := make(map[string]float64, len(entropy))
 	for word, e := range entropy {
 		if c.isValid(word) {
 			subsetEntropy[word] = e
