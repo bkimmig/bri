@@ -27,6 +27,12 @@ func (c criteria) isValid(word string) bool {
 			return false
 		}
 
+		// if the letter is not in the word, throw it out immediately
+		info, ok = c.info[letter]
+		if ok && !info {
+			return false
+		}
+
 		// check if the letter is contained in the word
 		_, ok = c.contains[letter]
 		if ok {
@@ -52,6 +58,7 @@ func (c criteria) Update(word, info string) error {
 
 		switch letterInfo {
 		case miss:
+			c.info[letter] = false
 			c.info[key] = false
 		case hit:
 			c.info[key] = false
